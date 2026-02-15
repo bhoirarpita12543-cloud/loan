@@ -11,26 +11,40 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-
+# Load model
 model = joblib.load("loan_prediction_model.pkl")
 
 st.title("🏦 Loan Prediction App")
 
-st.write("Enter applicant details below:")
+st.write("Enter Applicant Details:")
 
-
-Gender = st.selectbox("Gender", encoder["Gender"].classes_)
-Married = st.selectbox("Married", encoder["Married"].classes_)
-Education = st.selectbox("Education", encoder["Education"].classes_)
-Self_Employed = st.selectbox("Self Employed", encoder["Self_Employed"].classes_)
+# User Inputs
+Gender = st.selectbox("Gender", ["Male", "Female"])
+Married = st.selectbox("Married", ["Yes", "No"])
+Education = st.selectbox("Education", ["Graduate", "Not Graduate"])
+Self_Employed = st.selectbox("Self Employed", ["Yes", "No"])
 ApplicantIncome = st.number_input("Applicant Income", min_value=0)
 CoapplicantIncome = st.number_input("Coapplicant Income", min_value=0)
 LoanAmount = st.number_input("Loan Amount", min_value=0)
 Loan_Amount_Term = st.number_input("Loan Amount Term", min_value=0)
-Credit_History = st.selectbox("Credit History", encoder["Credit_History"].classes_)
-Property_Area = st.selectbox("Property Area", encoder["Property_Area"].classes_)
+Credit_History = st.selectbox("Credit History", ["Good", "Bad"])
+Property_Area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
 
+# 🔹 Manual Encoding
+Gender = 1 if Gender == "Male" else 0
+Married = 1 if Married == "Yes" else 0
+Education = 1 if Education == "Graduate" else 0
+Self_Employed = 1 if Self_Employed == "Yes" else 0
+Credit_History = 1 if Credit_History == "Good" else 0
 
+if Property_Area == "Urban":
+    Property_Area = 2
+elif Property_Area == "Semiurban":
+    Property_Area = 1
+else:
+    Property_Area = 0
+
+# Create DataFrame
 df = pd.DataFrame({
     "Gender": [Gender],
     "Married": [Married],
@@ -44,15 +58,11 @@ df = pd.DataFrame({
     "Property_Area": [Property_Area]
 })
 
+# Prediction
 if st.button("Predict Loan Approval"):
-
-
-    for col in encoder:
-        df[col] = encoder[col].transform(df[col])
-
     prediction = model.predict(df)
 
     if prediction[0] == 1:
-        st.success("Loan Approved")
+        st.success(" Loan Approved")
     else:
-        st.error("Loan Not Approved")
+        st.error(" Loan Not Approved")
