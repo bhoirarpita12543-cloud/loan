@@ -13,7 +13,7 @@ import joblib
 
 model = joblib.load("loan_prediction_model.pkl")
 
-st.title("🏦 Loan Prediction App")
+st.title("Loan Prediction App")
 st.write("Enter Applicant Details:")
 
 
