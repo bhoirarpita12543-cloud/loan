@@ -10,9 +10,11 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+# Load Model
 model = joblib.load("loan_prediction_model.pkl")
 
 st.title("🏦 Loan Prediction App")
+st.write("Enter Applicant Details:")
 
 # Inputs
 Gender = st.selectbox("Gender", ["Male", "Female"])
@@ -32,7 +34,7 @@ Gender = 1 if Gender == "Male" else 0
 Married = 1 if Married == "Yes" else 0
 Education = 1 if Education == "Graduate" else 0
 Self_Employed = 1 if Self_Employed == "Yes" else 0
-Property_Area = {"Urban":2, "Semiurban":1, "Rural":0}[Property_Area]
+Property_Area = {"Urban": 2, "Semiurban": 1, "Rural": 0}[Property_Area]
 
 # Convert Dependents properly
 if Dependents == "3+":
@@ -40,8 +42,8 @@ if Dependents == "3+":
 else:
     Dependents = int(Dependents)
 
-# 🔥 IMPORTANT: Create DataFrame in EXACT training order
-df = pd.DataFrame([[ 
+# IMPORTANT: Column order must match training
+df = pd.DataFrame([[
     Gender,
     Married,
     Dependents,
@@ -67,6 +69,7 @@ df = pd.DataFrame([[
     "Property_Area"
 ])
 
+# Prediction
 if st.button("Predict Loan Approval"):
     prediction = model.predict(df)
 
