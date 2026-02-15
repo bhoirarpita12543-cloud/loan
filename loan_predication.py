@@ -10,16 +10,14 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load Model
 model = joblib.load("loan_prediction_model.pkl")
 
 st.title("🏦 Loan Prediction App")
 
-st.write("Enter Applicant Details:")
-
 # Inputs
 Gender = st.selectbox("Gender", ["Male", "Female"])
 Married = st.selectbox("Married", ["Yes", "No"])
+Dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
 Education = st.selectbox("Education", ["Graduate", "Not Graduate"])
 Self_Employed = st.selectbox("Self Employed", ["Yes", "No"])
 ApplicantIncome = st.number_input("Applicant Income", min_value=0)
@@ -29,38 +27,50 @@ Loan_Amount_Term = st.number_input("Loan Amount Term", min_value=0)
 Credit_History = st.selectbox("Credit History", [1, 0])
 Property_Area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
 
-# Manual Encoding
+# Manual Encoding (same as training)
 Gender = 1 if Gender == "Male" else 0
 Married = 1 if Married == "Yes" else 0
 Education = 1 if Education == "Graduate" else 0
 Self_Employed = 1 if Self_Employed == "Yes" else 0
+Property_Area = {"Urban":2, "Semiurban":1, "Rural":0}[Property_Area]
 
-if Property_Area == "Urban":
-    Property_Area = 2
-elif Property_Area == "Semiurban":
-    Property_Area = 1
+# Convert Dependents properly
+if Dependents == "3+":
+    Dependents = 3
 else:
-    Property_Area = 0
+    Dependents = int(Dependents)
 
-# Create DataFrame (ORDER MUST MATCH TRAINING DATA)
-df = pd.DataFrame({
-    "Gender": [Gender],
-    "Married": [Married],
-    "Education": [Education],
-    "Self_Employed": [Self_Employed],
-    "ApplicantIncome": [ApplicantIncome],
-    "CoapplicantIncome": [CoapplicantIncome],
-    "LoanAmount": [LoanAmount],
-    "Loan_Amount_Term": [Loan_Amount_Term],
-    "Credit_History": [Credit_History],
-    "Property_Area": [Property_Area]
-})
+# 🔥 IMPORTANT: Create DataFrame in EXACT training order
+df = pd.DataFrame([[ 
+    Gender,
+    Married,
+    Dependents,
+    Education,
+    Self_Employed,
+    ApplicantIncome,
+    CoapplicantIncome,
+    LoanAmount,
+    Loan_Amount_Term,
+    Credit_History,
+    Property_Area
+]], columns=[
+    "Gender",
+    "Married",
+    "Dependents",
+    "Education",
+    "Self_Employed",
+    "ApplicantIncome",
+    "CoapplicantIncome",
+    "LoanAmount",
+    "Loan_Amount_Term",
+    "Credit_History",
+    "Property_Area"
+])
 
-# Prediction
 if st.button("Predict Loan Approval"):
     prediction = model.predict(df)
 
     if prediction[0] == 1:
         st.success("Loan Approved")
     else:
-        st.error(" Loan Not Approved")
+        st.error("Loan Not Approved")
