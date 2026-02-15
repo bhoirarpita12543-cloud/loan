@@ -10,62 +10,44 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-
 model = joblib.load("loan_prediction_model.pkl")
 
 st.title("Loan Prediction App")
-st.write("Enter Applicant Details:")
+
+gender = st.selectbox("Gender", ["Male", "Female"])
+married = st.selectbox("Married", ["Yes", "No"])
+dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
+education = st.selectbox("Education", ["Graduate", "Not Graduate"])
+self_employed = st.selectbox("Self Employed", ["Yes", "No"])
+applicant_income = st.number_input("Applicant Income", 0)
+coapplicant_income = st.number_input("Coapplicant Income", 0)
+loan_amount = st.number_input("Loan Amount", 0)
+loan_term = st.number_input("Loan Amount Term", 0)
+credit_history = st.selectbox("Credit History", [1.0, 0.0])
+property_area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
 
 
-Gender = st.selectbox("Gender", ["Male", "Female"])
-Married = st.selectbox("Married", ["Yes", "No"])
-Dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
-Education = st.selectbox("Education", ["Graduate", "Not Graduate"])
-Self_Employed = st.selectbox("Self Employed", ["Yes", "No"])
-ApplicantIncome = st.number_input("Applicant Income", min_value=0)
-CoapplicantIncome = st.number_input("Coapplicant Income", min_value=0)
-LoanAmount = st.number_input("Loan Amount", min_value=0)
-Loan_Amount_Term = st.number_input("Loan Amount Term", min_value=0)
-Credit_History = st.selectbox("Credit History", [1, 0])
-Property_Area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
+df = pd.DataFrame({
+    "Gender": [gender],
+    "Married": [married],
+    "Dependents": [dependents],
+    "Education": [education],
+    "Self_Employed": [self_employed],
+    "ApplicantIncome": [applicant_income],
+    "CoapplicantIncome": [coapplicant_income],
+    "LoanAmount": [loan_amount],
+    "Loan_Amount_Term": [loan_term],
+    "Credit_History": [credit_history],
+    "Property_Area": [property_area]
+})
 
-
-Gender = 1 if Gender == "Male" else 0
-Married = 1 if Married == "Yes" else 0
-Education = 1 if Education == "Graduate" else 0
-Self_Employed = 1 if Self_Employed == "Yes" else 0
-Property_Area = {"Urban": 2, "Semiurban": 1, "Rural": 0}[Property_Area]
-
-
-if Dependents == "3+":
-    Dependents = 3
-else:
-    Dependents = int(Dependents)
-
-
-
-df = pd.DataFrame(columns=model.feature_names_in_)
-
-
-df.loc[0] = [
-    Gender,
-    Married,
-    Dependents,
-    Education,
-    Self_Employed,
-    ApplicantIncome,
-    CoapplicantIncome,
-    LoanAmount,
-    Loan_Amount_Term,
-    Credit_History,
-    Property_Area
-]
-
-
-if st.button("Predict Loan Approval"):
+if st.button("Predict"):
     prediction = model.predict(df)
 
     if prediction[0] == 1:
         st.success("Loan Approved")
+    else:
+        st.error("Loan Not Approved")
+
     else:
         st.error("Loan Not Approved")
