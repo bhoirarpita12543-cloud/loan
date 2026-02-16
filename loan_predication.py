@@ -26,7 +26,6 @@ loan_term = st.number_input("Loan Amount Term", 0)
 credit_history = st.selectbox("Credit History", [1.0, 0.0])
 property_area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
 
-
 df = pd.DataFrame({
     "Gender": [gender],
     "Married": [married],
@@ -46,8 +45,5 @@ if st.button("Predict"):
 
     if prediction[0] == 1:
         st.success("Loan Approved")
-    elif:
-        st.error("Loan Not Approved")
-
     else:
         st.error("Loan Not Approved")
