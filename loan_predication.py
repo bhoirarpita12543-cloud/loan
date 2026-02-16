@@ -15,7 +15,7 @@ model = joblib.load("loan_prediction_model.pkl")
 
 st.title("Loan Prediction App")
 
-# ---------- USER INPUT ----------
+
 
 gender = st.selectbox("Gender", ["Male", "Female"])
 married = st.selectbox("Married", ["Yes", "No"])
@@ -47,22 +47,22 @@ input_dict = {
 
 input_df = pd.DataFrame([input_dict])
 
-# ---------- APPLY SAME ENCODING AS TRAINING ----------
-
-# Convert categorical to dummy variables
 input_df = pd.get_dummies(input_df)
 
-# Add missing columns (important!)
+
 for col in model.feature_names_in_:
     if col not in input_df.columns:
         input_df[col] = 0
 
-# Ensure correct column order
+
 input_df = input_df[model.feature_names_in_]
 
-# ---------- PREDICTION ----------
 
-if prediction[0] == 0:
-    st.success("Loan Approved ")
-else:
-    st.error("Loan Not Approved ")
+if st.button("Predict"):
+
+    prediction = model.predict(input_df)
+
+    if prediction[0] == 1:
+        st.success("Loan Approved ")
+    else:
+        st.error("Loan Not Approved ")
