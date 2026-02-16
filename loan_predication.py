@@ -62,11 +62,7 @@ input_df = input_df[model.feature_names_in_]
 
 # ---------- PREDICTION ----------
 
-if st.button("Predict"):
-
-    prediction = model.predict(input_df)
-
-    if prediction[0] == 1:
-        st.success("Loan Approved ✅")
-    else:
-        st.error("Loan Not Approved ❌")
+if prediction[0] == 0:
+    st.success("Loan Approved ")
+else:
+    st.error("Loan Not Approved ")
