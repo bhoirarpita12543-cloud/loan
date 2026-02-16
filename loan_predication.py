@@ -19,14 +19,22 @@ married = st.selectbox("Married", ["Yes", "No"])
 dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
 education = st.selectbox("Education", ["Graduate", "Not Graduate"])
 self_employed = st.selectbox("Self Employed", ["Yes", "No"])
-applicant_income = st.number_input("Applicant Income", 0)
-coapplicant_income = st.number_input("Coapplicant Income", 0)
-loan_amount = st.number_input("Loan Amount", 0)
-loan_term = st.number_input("Loan Amount Term", 0)
+applicant_income = st.number_input("Applicant Income", min_value=0)
+coapplicant_income = st.number_input("Coapplicant Income", min_value=0)
+loan_amount = st.number_input("Loan Amount", min_value=0)
+loan_term = st.number_input("Loan Amount Term", min_value=0)
 credit_history = st.selectbox("Credit History", [1.0, 0.0])
 property_area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
 
-df = pd.DataFrame({
+
+gender = 1 if gender == "Male" else 0
+married = 1 if married == "Yes" else 0
+education = 0 if education == "Graduate" else 1
+self_employed = 1 if self_employed == "Yes" else 0
+dependents = 3 if dependents == "3+" else int(dependents)
+property_area = {"Rural": 0, "Semiurban": 1, "Urban": 2}[property_area]
+
+input_data = pd.DataFrame({
     "Gender": [gender],
     "Married": [married],
     "Dependents": [dependents],
@@ -40,8 +48,11 @@ df = pd.DataFrame({
     "Property_Area": [property_area]
 })
 
+input_data = input_data[model.feature_names_in_]
+
 if st.button("Predict"):
-    prediction = model.predict(df)
+
+    prediction = model.predict(input_data)
 
     if prediction[0] == 1:
         st.success("Loan Approved")
